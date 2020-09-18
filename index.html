@@ -1,150 +1,271 @@
-<!DOCTYPE html>
-<html lang="en">
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+        <link rel="stylesheet" href="css/layout.css">
+        <title>Document</title>
+        
+        <script>
+            $(document).ready( function() {
+                let title = $('#visual img:first-child');
+                let car = $('#visual img:last-child');
 
-<head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <meta charset="UTF-8">
-    <link href="css/style.css" rel="stylesheet" type="text/css">
-    <title>제이쿼리 문서객체조작_스크롤이벤트와 조작메소드로 가로스크롤 레이아웃 구현</title>
-    <script>
-        $(document).ready(function () {
-            $(window).scroll(function () {
-                let sPos = $(window).scrollLeft();
-                $('.status').html(sPos);
-            });
-            $('.gnb li a').click(function () {
-                $('.gnb a').removeClass('on');
-                $(this).addClass('on');
-
-                let id_name = $(this).attr('href');
-                let offLeft = $(id_name).offset().left;
-                $('html,body').animate({
-                    scrollLeft: offLeft
-                }, 300);
-                return false;
-            });
+                car.animate({left: '20%', opacity: '1'},500, function() {
+                    title.animate({right: '20%', opacity: '1'},500);
+                });
+                // title.delay(500).animate({right: '20%', opacity: '1'},500);
+                // 딜레이를 걸어줘도 되고 위에 처럼 하나하나씩 발동되도록 설계도 가능
 
 
-            $('section article').each(function () {
-                // 개별적으로 Wheel 이벤트 적용
-                $(this).on('mousewheel', function (e) {
+                // let winWidth = $(window).width();
+                let ObjWidth = $('.sub_sec02_one .img_inside_txt').width();
+                let leftval = (1200 - ObjWidth)/2;
+                console.log(leftval);
+                $('.sub_sec02_one .img_inside_txt').css('left', leftval + 'px');
 
-                    var delta = 0;
-                    var moveTop = null;
-                    var boxMax = $("section article").length - 1;
-                    var winEvent = "";
-                    console.log(boxMax);
+                // nav moving event
+                $('.gnb > li').on({'click focus': function() {
+                    let num = $(this).index()+1;
+                    console.log(num);
 
-                    if (!winEvent) { //만약에 이벤트가 발생하지 않는다면
-                        winEvent = window.event; //이벤트는 없다
+                    let conTop =$('section article').eq(num).offset().top;
+
+                    $('html, body').animate({scrollTop:conTop-58},500);
+                    return false;
+                }});
+                // 786 1548 2314 3067 3851 4623 5333
+                $(window).scroll( function() {
+                    let sPos = $(window).scrollTop();
+                    $('.status').text(sPos);
+                    if(sPos >= 700) {
+                        $('footer a').fadeIn();
+                    } else {
+                        $('footer a').fadeOut();
                     }
-                    if (winEvent.wheelDelta) { //만약에 이벤트에서 휠데이터값이 있다면
-                        delta = winEvent.wheelDelta / 120; //데이터값을 저장
-                        if (window.opera) {
-                            delta = -delta;
-                        }
-                    } else if (winEvent.detail) { //그렇지 않으면
-                        delta = -winEvent.detail / 3;
+
+
+                    if(sPos >= 1) {
+                        $('header').css({position: 'fixed'});
+                    } else {
+                        $('header').css({position: 'relative'});
                     }
 
-                    // 마우스휠을 위에서 아래로 이동(처음에서 다음박스로 이동)
-                    if (delta < 0) {
-                        // 마지막 BOX 보다 순서값이 작은 경우에 실행
-                        if ($(this).index() < boxMax) {
-                            console.log("▼");
-                            if ($(this).next() != undefined) {
-                                moveTop = $(this).next().offset().left;
-                            }
-                        }
-                        // 마지막 article보다 더 오른쪽으로 이동하려고 하는 경우 알림창 출력
-                        else {
-                            alert("마지막 페이지 입니다.");
-                            return false;
-                        }
+                    //각 해당하는 콘텐츠가 상단으로 올라오면 해당하는 메뉴에 서식을 적용
+                    let h = $('section > article').height();
+                    console.log(h*1);
+                    console.log(h*2);
+                    console.log((h*3)+1220);
+                    console.log(h*4);
+                    console.log(h*5);
+
+                    if(sPos >= h*1 && sPos <= (h*2)+300) {
+                        $('.gnb a').removeClass('on');
+                        $('.gnb > li').eq(0).find('a').addClass('on');
+                    } else if(sPos >= (h*2)+300 && sPos <= (h*3)+1220) {
+                        $('.gnb a').removeClass('on');
+                        $('.gnb > li').eq(1).find('a').addClass('on');
+                    } else if(sPos >= (h*3)+1220 && sPos <= (h*4)+2220) {
+                        $('.gnb a').removeClass('on');
+                        $('.gnb > li').eq(2).find('a').addClass('on');
+                    } else if(sPos >= (h*4)+2220) {
+                        $('.gnb a').removeClass('on');
+                        $('.gnb > li').eq(3).find('a').addClass('on');
+                    } else {
+                        $('.gnb a').removeClass('on');
                     }
-                    // 마우스휠을 아래에서 위로 이동( 뒤에서 앞으로 이동)
-                    else {
-                        // 첫번째 article보다 순서값이 큰 경우에 실행
-                        if ($(this).index() > 0) {
-                            console.log("▲");
-                            if ($(this).prev() != undefined) {
-                                moveTop = $(this).prev().offset().left;
-                            }
-                        }
-                        // 첫번째 article보다 더 위로 이동하려고 하는 경우 알림창 출력
-                        else {
-                            alert("첫번째 페이지 입니다.");
-                            return false;
-                        }
-                    }
-                    //화면 이동 0.3초(300)
-                    $("html,body").stop().animate({
-                        scrollLeft: moveTop + "px"
-                    }, 300);
+
+                    // if(sPos >= $('.sub_con').eq(2).offset().top) {
+                    //     console.log($('section > article').offset().top);
+                    //     $('.gnb a').removeClass('on');
+                    //     $('.gnb > li').eq(0).find('a').addClass('on');
+                    // } else if(sPos >= $('section > article').top) {
+                    //     $('.gnb a').removeClass('on');
+                    //     $('.gnb > li').eq(1).find('a').addClass('on');
+                    // } else if(sPos >= $('section > article').top) {
+                    //     $('.gnb a').removeClass('on');
+                    //     $('.gnb > li').eq(2).find('a').addClass('on');
+                    // } else if(sPos >= $('section > article').top) {
+                    //     $('.gnb a').removeClass('on');
+                    //     $('.gnb > li').eq(2).find('a').addClass('on');
+                    // } else {
+                    //     $('.gnb a').removeClass('on');
+                    // }
+
+                });
+                $('footer > a').click( function() {
+                    $('html, body').animate({scrollTop: '0'},1000);
+                    return false;
                 });
             });
+        </script>
+    </head>
+    <body>
+        <span class="status"></span>
+        <header>
+            <nav>
+                <a href="index.html" title="메인페이지 바로가기"><img src="giant_logo.png" alt=""></a>
+                <ul class="gnb">
+                    <li><a href="#" title="런칭cf">ABOUT</a></li>
+                    <li><a href="#" title="하이브리드">PURPOSE</a></li>
+                    <li><a href="#" title="design">HISTORY</a></li>
+                    <li><a href="#" title="design">CONTACT US</a></li>
+                </ul>
+                <a href="#" title="search"><i class="fas fa-search"></i></a>
+            </nav>
+        </header>
 
-            // $('setion').on('mousewheel', function() {
-            //     let wheelDelta = e.originalEvent.wheelDelta;
+        <section>
+            <article id="visual">
+                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/DAgIf-4QdJI?autoplay=1&amp;mute=1&controls=0&disablekb=1&amp;loop=1&playlist=DAgIf-4QdJI&showinfo=0"  frameborder="0" allowfullscreen></iframe>
+                </video>
+            </article>
+            <article class="sub_con" id="cf">
+                <div class="sec_01">
+                    <h1>ABOUT</h1>
+                    <p class="line"></p>
+                    <p class="sub_title">
+                        GIANT는 1972년 하나의 목표를 가지고 설립되었습니다.<br>
+                        전 세계 사람들을 위해 더 좋은 사이클링 경험을 창조하고, 제공하는 것입니다. 
+                    </p>
+                    <div class="sub_sec01 sub_sec01_box">
+                        <img src="img/sec_01_img.jpeg" alt="설립자 이미지">
+                        <div class="sub_sec_title">
+                            <h2>GIANT의 설립자는 전문가이며, 엔지니어였습니다.</h2>
+                            <p>
+                                더 나은 세계를 만들기 위해 GIANT가 할 수 있는 일이 무엇인지 고민했습니다.<br>
+                                그리고 GIANT는 하나의 목표를 설정합니다.<br> 
+                                전 세계 사람들이 사이클링을 더 재미있게 즐기고, 이 스포츠에 더 접하기 쉽게 만드는 것.<br>
+                                장인정신, 혁신, 그리고 열정이라는 세 가지 기본 원칙을 바탕으로<br>
+                                GIANT는 새로운 사이클링 라이프를 선보이기 시작했습니다.<br>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="sub_sec01_1 sub_sec01_box">
+                        <div class="sub_sec_title">
+                            <h2>GIANT의 혁신은 경량 알루미늄 프레임에서 시작했습니다.</h2>
+                            <p>
+                                합리적인 가격에 높은 퀄리티의 바이크를 제작하는 GIANT의 능력은 라이더가 다양한 방법으로
+                                사이클링을 접할 수 있도록 만들었습니다.그 때부터 GIANT는 알루미늄 및 카본 엔지니어링 발전의 선도주자가 되었습니다.
+                                그리고 합리적인 가격대의 카본 바이크 Cadex 980C를 선보이며,하이 퍼포먼스 로드 바이크에
+                                Total Compact Road 디자인(최초의 TCR 모델)을 적용하였습니다. 마운틴 바이크에서는 GIANT Maestro 서스펜션
+                                시스템을 개발하고, 오프로드 라이딩 장르에 새로운 레벨의 퍼포먼스를 보여주었습니다.
+                            </p>
+                        </div>
+                        <img src="img/sec_01_img2.png" alt="자전거 이미지">
+                    </div>
+                    <div class="sub_last">
+                        <p>
+                            GIANT 자전거는 월드 챔피언쉽에서 우승하며 디자인 어워드를 수상하였습니다.<br>
+                            하지만 우리에게 가장 중요한 것은 사이클링을 삶의 일부로 여기는 라이더의 마음을 얻은 것입니다.<br>
+                            GIANT는 사이클링이 세계를 더 나아지게 만들것이라는 믿음으로 라이더를 더욱 지지할 것입니다.<br>
+                        </p>
+                        <p class="last_txt">
+                            RIDE LIFE. RIDE GIANT. 
+                        </p>
+                    </div>
+                </div>
+            </article>
+            <article class="sub_con" id="hybrid">
+                <div class="sub_sec02_one">
+                    <img src="img/sec_02_img.jpg" alt="">
+                    <div class="img_inside_txt">
+                        <h2>OUR PURPOSE</h2>
+                        <p class="line"></p>
+                        <p>
+                            GIANT의 목표는 명확합니다.<br>
+                            라이더의 잠재력을 최대한 이끌어내는 것
+                        </p>
+                    </div>
+                </div>
+                <div class="sub_sec02_two">
+                    <div class="sub_sec02_txt">
+                        <p>
+                            레이스 우승, 기술적인 트레일 라이딩, 긴 여행에의 도전, 혹은 새로운 모험의 시작,<br>
+                            여러분의 목표가 무엇이든 즐거운 마음으로 그 여정을 함께합니다. 이는 단지 성과에 관한 것만은 아닙니다.
+                        </p>
+                        <p>
+                            바로 열정입니다.<br>
+                            밖으로 나가 계획한 것을 하겠다는 의지입니다.<br>
+                            그리고 구속받지 않는 자유로움입니다.<br>
+                        </p>
+                        <p>
+                            GIANT는 이 아이디어를 중심으로 모든 것을 만들었습니다.<br>
+                            GIANT의 제품, GIANT의 스토어, 그리고 GIANT의 커뮤니티는 모두 여러분을 지지하기 위해 이곳에 있습니다.<br>
+                            “Ride Unleashed”라는 브랜드 목표를 달성하기 위해 다음과 같은 3가지를 약속합니다.
+                        </p>
+                    </div>
+                    <div class="sub_sec02_img">
+                        <div class="circle_box">
+                            <img src="img/sec_02_01.jpg" alt="">
+                            <p>BE LIMITLESS</p>
+                            <p class="line"></p>
+                            <p>
+                                자전거와 장비의 완벽한 환경을 조성하여<br>
+                                라이더가 자신의 한계를 극복할 수 있도록 돕겠습니다.
+                            </p>
+                        </div>
+                        <div class="circle_box">
+                            <img src="img/sec_02_02.jpg" alt="">
+                            <p>OPTIMIZE THE EXPERIENCE</p>
+                            <p class="line"></p>
+                            <p>
+                                지속적으로 혁신하며 새로운 가능성과<br>
+                                즐거움을 만들어 나가겠습니다.
+                            </p>
+                        </div>
+                        <div class="circle_box">
+                            <img src="img/sec_02_03.jpg" alt="">
+                            <p>GROW THE COMMUNITY</p>
+                            <p class="line"></p>
+                            <p>
+                                라이더의 활동과 성과를<br>
+                                그 곁에서 함께 축하하겠습니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="sub_con" id="design">
+                <div class="sec_03">
+                    <img src="img/sec_03_img.jpg" alt="">
+                </div>
+            </article>
+            <article class="sub_con" id="con">
+                <div class="sec_04">
+                    <form name="contact" method="post" action="contact_me1.php">
+                        <fieldset>
+                            <legend>Contact Us</legend>
+                            <div class="one_form">
+                                <div class="field">
+                                    <label for="name"></label>
+                                    <input type="text" name="name" id="name" placeholder="성명">
+                                </div>
+                                <div class="field">
+                                    <label for="email"></label>
+                                    <input type="email" placeholder="id@domain.com" name="email" id="email">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="message"></label>
+                                <textarea name="message" id="message" placeholder="무엇이 궁금한가요?" rows="5"></textarea>
+                            </div>
+                            <ul>
+                                <li><input type="submit" value="SUBMIT"></li>
+                            </ul>
+                        </fieldset>
+                    </form>
+                </div>
+            </article>
+            
+        </section>
 
-            //     if(wheelDelta > 0) {
-            //         $(this).animate({'margin-left': '-=50px'},300);
-            //     } else {
-            //         $(this).animate({'margin-left': '+=50px'},300);
-            //     }
-            // })
-        })
-    </script>
-</head>
-
-<body>
-    <span class="status"></span>
-    <!--   헤더영역 시작-->
-    <header>
-        <ul class="gnb">
-            <li><a href="#c01" title="">Mini Cooper</a></li>
-            <li><a href="#c02" title="">Tesla</a></li>
-            <li><a href="#c03" title="">Lamborghini</a></li>
-            <li><a href="#c04" title="">Porsche</a></li>
-        </ul>
-
-    </header>
-
-    <!--    콘텐츠영역 시작-->
-    <section id="con">
-        <article id="c01">
-            <h2>Mini Cooper</h2>
-            <p>Mini Cooper 미니는 독일의 자동차 제조사인 BMW의 전륜구동, 상시 4륜구동 해치백형 쿠페를 말한다. 영국의 자동차 제조사 브리티쉬 모터의 자동차 브랜드인 미니를 BMW가 인수한
-                후 새롭게 설계하여 출시했다. 2001년 4월부터 영국 옥스퍼드셔 주 옥스퍼드 공장에서 생산하고 있으며, 2세대부터 모델 라인업이 증가했다.</p>
-        </article>
-        <article id="c02">
-            <h2>Tesla</h2>
-            <p>Tesla 테슬라 주식회사는 미국의 전기자동차 회사이다. 2003년, 마틴 에버하드와 마크 타페닝가 창업했다. 2004년 페이팔의 최고경영자이던 일론 머스크가 투자자로 참여했다. 회사
-                이름은 물리학자이자 전기공학자인 니콜라 테슬라의 이름을 따서 지었다. 2010년 6월 나스닥에 상장되었다</p>
-        </article>
-        <article id="c03">
-            <h2>Lamborghini</h2>
-            <p>회사의 철칙은 페라리보다 빠른 차를 만들자이다. 페라리가 GT 계열 스포츠카[2]를 추구한다면 람보르기니는 말그대로 타협이라곤 일절없는 퓨어 스포츠카를 지향한다. 아이러니한건 창업주 페루초
-                람보르기니는 튼튼하고 편안한 GT카를 좋아했다는 것. 페라리의 잦은 고장에 질려서 직접 차를 만들 정도였으니까..</p>
-        </article>
-        <article id="c04">
-            <h2>Porsche</h2>
-            <p>주식회사 포르쉐는 독일의 고급 스포츠카 전문 제조 기업이다. 포르쉐 자동차 제조사인 포르쉐 AG와 폭스바겐 AG가 대주주이다. 독일 바덴뷔르템베르크 주 슈투트가르트에 본사가 있다.
-                1931년 오스트리아-헝가리 제국의 기술자였던 공학박사 페르디난트 포르셰에 의해 설립되었다. 주로 고급 스포츠카를 만들며, SUV와 고급 세단 시장에도 진출했다</p>
-        </article>
-
-
-    </section>
-
-    <!--푸터영역 시작-->
-    <footer>
-        <address>
-            Copyright&copy;2020 가로스크롤 레이아웃 allrights reserved.
-        </address>
-
-    </footer>
-
-
-</body>
-
-</html>
+        <footer>
+            <a href="#" title="페이지 상단으로 바로가기">Top</a>
+            <address>Copyright&copy;2020 Hyundai Moters allrights reserved</address>
+        </footer>
+    </body>
+    </html>
